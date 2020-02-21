@@ -11,9 +11,9 @@ world = World()
 
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
-map_file = "maps/test_cross.txt"
+# map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
-# map_file = "maps/test_loop_fork.txt"
+map_file = "maps/test_loop_fork.txt"
 # map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
@@ -28,18 +28,21 @@ player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
-traversal_path = ["n"]
+traversal_path = []
 
 
 class Discovery():
     def __init__(self):
+        self.graph = {}
         self.stack = []
-        self.graph = set()
+        self.the_way = []
+        self.the_rooms = set()
+        self.moves = 0
 
-    def add(self, value):
+    def addstack(self, value):
         self.stack.append(value)
 
-    def remove(self):
+    def remstack(self):
         if self.size() > 0:
             return self.stack.pop()
         else:
@@ -48,15 +51,63 @@ class Discovery():
     def size(self):
         return len(self.stack)
 
-    def set_map(self, graph):
-        self.graph = graph
+    def start_graph(self, room_graph):
+        room_model = {'n':"?", 'e':"?", 's':"?", 'w':"?"}
+        for room in room_graph:
+            self.graph[room] = room_model
 
-    def opti_path(self):
-        pass
 
 
-disco = Discovery()
-disco.set_map(room_graph)
+# A function that finds possible paths
+def possible_path():
+    disco = Discovery()
+    disco.start_graph(room_graph)
+
+    directions = disco.find_directions(0)
+
+    player.current_room.get_exits()
+    player.travel("n")
+    player.current_room.get_exits()
+
+
+
+    print('directions: ', directions, player.current_room.id)
+
+    # room_details = room_graph[player.current_room.id]
+    # disco.addstack(room_details)
+
+    # # Stop on empty stack
+    # # Explore
+    # # Store the connected paths in the_way
+    # # Reach the end of a path, then back track it?
+    # # Don't go over same path again and again
+    while disco.size() > 0:
+        path = disco.remstack()
+        print(path)
+
+    # while len(self.stack) > 0:
+    #     path = self.stack.pop()
+    #     pathend = path[-1]
+    #     # coords = pathend[0]
+    #     poss_direct = pathend[1]
+
+    #     print('poss_direct: ', poss_direct)
+
+    #     for connected_room in poss_direct:
+    #         self.the_way.append(connected_room)
+    #         path_copy = list(path)
+    #         path_copy.append(self.graph[poss_direct[connected_room]])
+            
+    #         print('  >>> print : ', path_copy, "\n", connected_room, self.the_way, "\n", self.graph[poss_direct[connected_room]])
+    #         self.moves += 1
+    #         if self.moves > 10:
+    #             break
+    #         self.stack.append(path_copy)
+            
+    #         print('self.the_way: ', self.the_way)
+    print('\nWhat to do, Mandalorian? ', disco.the_way)
+
+possible_path()
 
 
 
@@ -90,3 +141,4 @@ player.current_room.print_room_description(player)
 #         break
 #     else:
 #         print("I did not understand that command.")
+
